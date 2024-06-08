@@ -7,8 +7,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use("/api/videos", videosRouter);
-app.use("/api/testing/all-data", (req: Request, res: Response) => {
+app.use("/videos", videosRouter);
+app.use("/testing/all-data", (req: Request, res: Response) => {
   videoRepository.deleteAll();
   res.sendStatus(204);
 });
