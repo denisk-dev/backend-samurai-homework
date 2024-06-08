@@ -14,7 +14,7 @@ videosRouter.get("/", (req: Request, res: Response) => {
 
 videosRouter.post("/", (req: Request, res: Response) => {
   //get title, author and availableResolutions from the request body
-  const { title, author, availableResolutions } = req.body;
+  const { title, author, availableResolutions, canBeDownloaded } = req.body;
   //check if title is provided and is not longer than 40 characters
   const errorsMessages = [];
   if (!title || title.length > 40) {
@@ -26,12 +26,19 @@ videosRouter.post("/", (req: Request, res: Response) => {
   //check if author is provided and is not longer than 20 characters
   if (!author || author.length > 20) {
     errorsMessages.push({
-      message: "problem with the title field",
+      message: "problem with the author field",
       field: "author",
     });
   }
+
+  if (canBeDownloaded && typeof canBeDownloaded !== "boolean") {
+    errorsMessages.push({
+      message: "problem with the canBeDownloaded field",
+      field: "canBeDownloaded",
+    });
+  }
   if (errorsMessages.length > 0) {
-    return res.status(400).send(errorsMessages);
+    return res.status(400).send({ errorsMessages });
   }
 
   const today = new Date();
@@ -43,7 +50,7 @@ videosRouter.post("/", (req: Request, res: Response) => {
     title,
     author,
     availableResolutions,
-    canBeDownloaded: false,
+    canBeDownloaded: canBeDownloaded ? canBeDownloaded : false,
     minAgeRestriction: null,
     createdAt: today,
     publicationDate: tomorrow,

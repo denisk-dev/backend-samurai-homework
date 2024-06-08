@@ -28,9 +28,6 @@ describe("videosRouter", () => {
       createdAt: expect.any(String),
       publicationDate: expect.any(String),
     });
-
-    // Check if the id is a valid UUID
-    // expect(validate(response.body.id)).toBe(true);
   });
 
   // Test for POST endpoint
@@ -43,16 +40,18 @@ describe("videosRouter", () => {
 
     expect(response.status).toBe(400);
 
-    expect(response.body).toMatchObject([
-      {
-        message: "problem with the title field",
-        field: "title",
-      },
-      {
-        message: "problem with the title field",
-        field: "author",
-      },
-    ]);
+    expect(response.body).toMatchObject({
+      errorsMessages: [
+        {
+          message: "problem with the title field",
+          field: "title",
+        },
+        {
+          message: "problem with the author field",
+          field: "author",
+        },
+      ],
+    });
   });
 
   // Test for GET endpoint to fetch all videos
