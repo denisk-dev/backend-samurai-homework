@@ -2,7 +2,11 @@ import { Router } from "express";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { convertVideosDatesToISO, convertVideoDatesToISO } from "./utils";
-import { videoRepository, Video } from "../repositories/videos-repo";
+import {
+  videoRepository,
+  Video,
+  Resolution,
+} from "../repositories/videos-repo";
 
 export const videosRouter = Router();
 
@@ -17,14 +21,14 @@ videosRouter.post("/", (req: Request, res: Response) => {
   const { title, author, availableResolutions, canBeDownloaded } = req.body;
   //check if title is provided and is not longer than 40 characters
   const errorsMessages = [];
-  if (!title || title.length > 40) {
+  if (!title?.trim() || title.length > 40) {
     errorsMessages.push({
       message: "problem with the title field",
       field: "title",
     });
   }
   //check if author is provided and is not longer than 20 characters
-  if (!author || author.length > 20) {
+  if (!author?.trim() || author.length > 20) {
     errorsMessages.push({
       message: "problem with the author field",
       field: "author",
@@ -35,6 +39,18 @@ videosRouter.post("/", (req: Request, res: Response) => {
     errorsMessages.push({
       message: "problem with the canBeDownloaded field",
       field: "canBeDownloaded",
+    });
+  }
+  //make sure availableResolutions only contain valid resolutions (Resolution enums)
+  if (
+    !Array.isArray(availableResolutions) ||
+    availableResolutions.some(
+      (resolution) => !Object.values(Resolution).includes(resolution)
+    )
+  ) {
+    errorsMessages.push({
+      message: "problem with the availableResolutions field",
+      field: "availableResolutions",
     });
   }
   if (errorsMessages.length > 0) {
@@ -89,7 +105,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
 
   // Check if title is provided and is not longer than 40 characters
   const errorsMessages = [];
-  if (!title || title.length > 40) {
+  if (!title?.trim() || title.length > 40) {
     errorsMessages.push({
       message: "problem with the title field",
       field: "title",
@@ -97,7 +113,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
   }
 
   //check if author is provided and is not longer than 20 characters
-  if (!author || author.length > 20) {
+  if (!author?.trim() || author.length > 20) {
     errorsMessages.push({
       message: "problem with the author field",
       field: "author",
@@ -109,6 +125,25 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
     errorsMessages.push({
       message: "problem with the minAgeRestriction field",
       field: "minAgeRestriction",
+    });
+  }
+
+  if (canBeDownloaded && typeof canBeDownloaded !== "boolean") {
+    errorsMessages.push({
+      message: "problem with the canBeDownloaded field",
+      field: "canBeDownloaded",
+    });
+  }
+
+  if (
+    !Array.isArray(availableResolutions) ||
+    availableResolutions.some(
+      (resolution) => !Object.values(Resolution).includes(resolution)
+    )
+  ) {
+    errorsMessages.push({
+      message: "problem with the availableResolutions field",
+      field: "availableResolutions",
     });
   }
 
