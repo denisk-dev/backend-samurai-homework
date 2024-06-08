@@ -18,8 +18,14 @@ export interface Video {
   availableResolutions: Array<Resolution>;
   canBeDownloaded: boolean;
   minAgeRestriction: number | null;
-  createdAt: Date;
-  publicationDate: Date;
+  /**
+   * createdAt should be in ISO format
+   */
+  createdAt: string;
+  /**
+   * publicationDate should be in ISO format
+   */
+  publicationDate: string;
 }
 
 export let videos: Array<Video> = [

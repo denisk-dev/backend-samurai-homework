@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
-import { convertVideosDatesToISO, convertVideoDatesToISO } from "./utils";
+// import { v4 as uuidv4 } from "uuid";
+
 import {
   videoRepository,
   Video,
@@ -11,9 +11,7 @@ import {
 export const videosRouter = Router();
 
 videosRouter.get("/", (req: Request, res: Response) => {
-  return res
-    .status(200)
-    .send(convertVideosDatesToISO(videoRepository.findAll()));
+  return res.status(200).send(videoRepository.findAll());
 });
 
 videosRouter.post("/", (req: Request, res: Response) => {
@@ -68,15 +66,14 @@ videosRouter.post("/", (req: Request, res: Response) => {
     availableResolutions,
     canBeDownloaded: canBeDownloaded ? canBeDownloaded : false,
     minAgeRestriction: null,
-    createdAt: today,
-    publicationDate: tomorrow,
+    createdAt: today.toISOString(),
+    publicationDate: tomorrow.toISOString(),
   };
 
   const isCreated = videoRepository.create(newVideo);
   if (isCreated) {
     const createdVideo = videoRepository.findById(newVideo.id);
-    if (createdVideo)
-      return res.status(201).send(convertVideoDatesToISO(createdVideo));
+    if (createdVideo) return res.status(201).send(createdVideo);
   }
   return res.sendStatus(500);
 });
@@ -147,6 +144,16 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
     });
   }
 
+  //check if publicationDate is in the ISO format
+  const isoFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+
+  if (!isoFormat.test(publicationDate)) {
+    errorsMessages.push({
+      message: "problem with the publicationDate field",
+      field: "publicationDate",
+    });
+  }
+
   if (errorsMessages.length > 0) {
     return res.status(400).send({ errorsMessages });
   }
@@ -163,7 +170,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
       availableResolutions,
       canBeDownloaded,
       minAgeRestriction,
-      publicationDate: new Date(publicationDate),
+      publicationDate,
     };
     if (videoRepository.updateById(Number(id), updatedVideo)) {
       return res.sendStatus(204);

@@ -96,14 +96,16 @@ describe("videosRouter", () => {
 
     expect(response.status).toBe(400);
 
-    expect(response.body).toMatchObject([
-      { message: "problem with the title field", field: "title" },
-      { message: "problem with the author field", field: "author" },
-      {
-        message: "problem with the minAgeRestriction field",
-        field: "minAgeRestriction",
-      },
-    ]);
+    expect(response.body).toMatchObject({
+      errorsMessages: [
+        { message: "problem with the title field", field: "title" },
+        { message: "problem with the author field", field: "author" },
+        {
+          message: "problem with the minAgeRestriction field",
+          field: "minAgeRestriction",
+        },
+      ],
+    });
   });
 
   // Test for PUT endpoint
