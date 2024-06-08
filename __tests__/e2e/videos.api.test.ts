@@ -1,11 +1,9 @@
 import request from "supertest";
 import { app } from "../../src/index"; // Import your express app
-import { v4 as uuidv4, validate } from "uuid";
-
-//TODO should I slightly improve my tests by adding extra checks?
+// import { v4 as uuidv4, validate } from "uuid";
 
 describe("videosRouter", () => {
-  let videoId: string;
+  let videoId: number;
 
   // Test for POST endpoint
   it("should create a new video and return it", async () => {
@@ -15,13 +13,13 @@ describe("videosRouter", () => {
       availableResolutions: ["P720", "P1080"],
     };
 
-    const response = await request(app).post("/api/videos").send(video);
+    const response = await request(app).post("/videos").send(video);
 
     videoId = response.body.id;
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
-      id: expect.any(String),
+      id: expect.any(Number),
       title: video.title,
       author: video.author,
       availableResolutions: video.availableResolutions,
@@ -32,7 +30,7 @@ describe("videosRouter", () => {
     });
 
     // Check if the id is a valid UUID
-    expect(validate(response.body.id)).toBe(true);
+    // expect(validate(response.body.id)).toBe(true);
   });
 
   // Test for POST endpoint
@@ -41,7 +39,7 @@ describe("videosRouter", () => {
       availableResolutions: ["P720", "P1080"],
     };
 
-    const response = await request(app).post("/api/videos").send(video);
+    const response = await request(app).post("/videos").send(video);
 
     expect(response.status).toBe(400);
 
@@ -59,13 +57,13 @@ describe("videosRouter", () => {
 
   // Test for GET endpoint to fetch all videos
   it("should fetch all videos and return status 200", async () => {
-    const response = await request(app).get("/api/videos");
+    const response = await request(app).get("/videos");
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body).toMatchObject([
       {
-        id: expect.any(String),
+        id: expect.any(Number),
         title: "Test Video",
         author: "Test Author",
         availableResolutions: ["P720", "P1080"],
@@ -79,7 +77,7 @@ describe("videosRouter", () => {
 
   // Test for GET endpoint when video is not found
   it("should return status 404 when video is not found", async () => {
-    const response = await request(app).get(`/api/videos/${uuidv4()}`);
+    const response = await request(app).get(`/videos/987}`);
 
     expect(response.status).toBe(404);
   });
@@ -94,7 +92,7 @@ describe("videosRouter", () => {
     };
 
     const response = await request(app)
-      .put(`/api/videos/${videoId}`)
+      .put(`/videos/${videoId}`)
       .send(updatedVideo);
 
     expect(response.status).toBe(400);
@@ -121,13 +119,13 @@ describe("videosRouter", () => {
     };
 
     const responseFailed = await request(app)
-      .put(`/api/videos/123`)
+      .put(`/videos/123`)
       .send(updatedVideo);
 
     expect(responseFailed.status).toBe(404);
 
     const response = await request(app)
-      .put(`/api/videos/${videoId}`)
+      .put(`/videos/${videoId}`)
       .send(updatedVideo);
 
     expect(response.status).toBe(204);
@@ -135,7 +133,7 @@ describe("videosRouter", () => {
 
   // Test for GET endpoint to fetch a specific video by id
   it("should fetch a video by id and return status 200", async () => {
-    const response = await request(app).get(`/api/videos/${videoId}`);
+    const response = await request(app).get(`/videos/${videoId}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -152,21 +150,21 @@ describe("videosRouter", () => {
 
   // Test for DELETE endpoint
   it("should delete a video and return status 204", async () => {
-    const response = await request(app).delete(`/api/videos/${videoId}`);
+    const response = await request(app).delete(`/videos/${videoId}`);
 
     expect(response.status).toBe(204);
   });
 
   // Test for DELETE endpoint when video is not found
   it("should return status 404 when video is not found", async () => {
-    const response = await request(app).delete(`/api/videos/${uuidv4()}`);
+    const response = await request(app).delete(`/videos/888`);
 
     expect(response.status).toBe(404);
   });
 
   // Test for GET endpoint to fetch all videos when no videos are available
   it("should fetch all videos and return status 200", async () => {
-    const response = await request(app).get("/api/videos");
+    const response = await request(app).get("/videos");
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);

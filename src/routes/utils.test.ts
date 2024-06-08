@@ -1,10 +1,10 @@
 import { convertVideosDatesToISO, convertVideoDatesToISO } from "./utils";
-import { Video, Resolution } from "../index";
+import { Video, Resolution } from "../repositories/videos-repo";
 
 describe("Utils", () => {
   it("should convert video dates to ISO format", () => {
     const video: Video = {
-      id: "425b03f9-a08f-4f36-a350-a3a2860fa819",
+      id: 456,
       title: "Test Video",
       author: "Test Author",
       availableResolutions: [Resolution.P720, Resolution.P1080],
@@ -25,7 +25,7 @@ describe("Utils", () => {
   it("should convert dates to ISO format for all videos in an array", () => {
     const videos: Array<Video> = [
       {
-        id: "425b03f9-a08f-4f36-a350-a3a2860fa819",
+        id: 123,
         title: "Test Video 2",
         author: "Test Author 2",
         availableResolutions: [Resolution.P720, Resolution.P1080],

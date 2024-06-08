@@ -12,7 +12,7 @@ export enum Resolution {
 }
 
 export interface Video {
-  id: ReturnType<typeof uuidv4>;
+  id: number;
   title: string;
   author: string;
   availableResolutions: Array<Resolution>;
@@ -45,7 +45,7 @@ export const videoRepository = {
     }
   },
 
-  findById(id: string) {
+  findById(id: number) {
     return videos.find((video) => video.id === id);
   },
 
@@ -53,7 +53,7 @@ export const videoRepository = {
     return videos;
   },
 
-  deleteById(id: string) {
+  deleteById(id: number) {
     const videoIndex = videos.findIndex((video) => video.id === id);
     if (videoIndex !== -1) {
       videos.splice(videoIndex, 1);
@@ -63,7 +63,7 @@ export const videoRepository = {
     }
   },
 
-  updateById(id: string, video: Video) {
+  updateById(id: number, video: Video) {
     const videoIndex = videos.findIndex((video) => video.id === id);
     if (videoIndex !== -1) {
       videos[videoIndex] = video;

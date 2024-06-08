@@ -34,15 +34,19 @@ videosRouter.post("/", (req: Request, res: Response) => {
     return res.status(400).send(errorsMessages);
   }
 
+  const today = new Date();
+  const tomorrow = new Date(today.getTime());
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const newVideo: Video = {
-    id: uuidv4(),
+    id: +new Date(),
     title,
     author,
     availableResolutions,
     canBeDownloaded: false,
     minAgeRestriction: null,
-    createdAt: new Date(),
-    publicationDate: new Date(),
+    createdAt: today,
+    publicationDate: tomorrow,
   };
 
   const isCreated = videoRepository.create(newVideo);
@@ -56,7 +60,7 @@ videosRouter.post("/", (req: Request, res: Response) => {
 
 videosRouter.get("/:id", (req: Request, res: Response) => {
   //using the passed id find the video in the videos array
-  const video = videoRepository.findById(req.params.id);
+  const video = videoRepository.findById(Number(req.params.id));
   //if the video is not found return a 404 status code
   if (!video) {
     return res.sendStatus(404);
@@ -105,7 +109,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
     return res.status(400).send(errorsMessages);
   }
 
-  const video = videoRepository.findById(id);
+  const video = videoRepository.findById(Number(id));
 
   if (!video) {
     return res.sendStatus(404);
@@ -119,7 +123,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
       minAgeRestriction,
       publicationDate: new Date(publicationDate),
     };
-    if (videoRepository.updateById(id, updatedVideo)) {
+    if (videoRepository.updateById(Number(id), updatedVideo)) {
       return res.sendStatus(204);
     } else {
       return res.sendStatus(500);
@@ -130,7 +134,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
 videosRouter.delete("/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
-  if (videoRepository.deleteById(id)) {
+  if (videoRepository.deleteById(Number(id))) {
     return res.sendStatus(204);
   } else {
     return res.sendStatus(404);
