@@ -148,7 +148,7 @@ videosRouter.put("/:id", (req: Request, res: Response) => {
   }
 
   if (errorsMessages.length > 0) {
-    return res.status(400).send(errorsMessages);
+    return res.status(400).send({ errorsMessages });
   }
 
   const video = videoRepository.findById(Number(id));
